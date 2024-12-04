@@ -33,7 +33,7 @@ namespace {
 	TfLiteTensor *output = nullptr;
 	int inference_count = 0;
 
-	constexpr int kTensorArenaSize = 2000;
+	constexpr int kTensorArenaSize = 4000;
 	uint8_t tensor_arena[kTensorArenaSize];
 }  /* namespace */
 
@@ -54,8 +54,17 @@ void setup(void)
 	/* This pulls in the operation implementations we need.
 	 * NOLINTNEXTLINE(runtime-global-variables)
 	 */
-	static tflite::MicroMutableOpResolver <1> resolver;
+	//Need to port resolver from Lite
+	//https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/docs/porting_reference_ops.md
+	static tflite::MicroMutableOpResolver <8> resolver;
 	resolver.AddFullyConnected();
+	resolver.AddConv2D();
+	resolver.AddReshape();
+	resolver.AddShape();
+	resolver.AddStridedSlice();
+	resolver.AddPack();
+	resolver.AddExpandDims();
+	resolver.AddGather();
 
 	/* Build an interpreter to run the model with. */
 	static tflite::MicroInterpreter static_interpreter(
